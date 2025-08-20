@@ -19,6 +19,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const listingsRouter = require("./routes/listing.js");
 const reviewsRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+const Listing  =require("./models/listing.js")
 
 const session = require("express-session"); // session 
 const MongoStore = require('connect-mongo');
@@ -88,6 +89,11 @@ app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     // console.log(res.locals.success);
     next();
+});
+
+app.get('/', async (req, res) => {
+  const allListings = await Listing.find({});
+  res.render('listings/index.ejs', { allListings });
 });
 
 //Express Router
