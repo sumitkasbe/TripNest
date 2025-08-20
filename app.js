@@ -71,11 +71,6 @@ const sessionOptions = {
     }
 };
 
-// app.get("/", (req, res) => {
-//     res.send("This is a home page");
-// });
-
-
 app.use(session(sessionOptions));
 app.use(flash());
 
@@ -83,11 +78,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 
-// use static serialize and deserialize of model for passport session support
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
-//  pbkdf2 hashing algorithm (ye hasing algo used ho rha hai iss project mai)
 
 //middleware for flash msg
 app.use((req, res, next) => {
@@ -98,39 +90,17 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.get("/demo", async (req, res) => {
-//     let fakeUser = new User({ 
-//         email: "student@gmail.com",
-//         username: "student1"
-//     });
-
-//    let registeredUser = await User.register(fakeUser, "helloworld");
-//    res.send(registeredUser);
-// })
-
 //Express Router
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
 
-
-// app.all("*",(req, res, next) => {
-//     next(new ExpressError(404, "Page Not Found"));
-// });
-
-app.use((req, res, next) => {
-    return next(new ExpressError(404, "Page Not Found!"));
-});
-
 app.use((err, req, res, next) => {
     console.log(err);
     let { status = 500, message = "Some Went Wrong!" } = err;
-    // res.send("Something went wrong!");
-    // res.status(status).send(message);
     res.status(status).render("error.ejs", { message });
-
 });
 
 app.listen(port, () => {
     console.log(`app is listening on a port ${port}`);
-});
+}); 
