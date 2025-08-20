@@ -95,10 +95,10 @@ app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
 
-app.use((err, req, res, next) => {
-    console.log(err);
-    let { status = 500, message = "Some Went Wrong!" } = err;
-    res.status(status).render("error.ejs", { message });
+app.use((err,req,res,next)=>{
+    let {statusCode = 500 , message = "Something is wrong"} = err;
+    res.render("listings/error.ejs", {message,statusCode});
+    // res.status(statusCode).send(message);
 });
 
 app.listen(port, () => {
