@@ -1,11 +1,13 @@
 <style>
   .navbar {
-    background-color: #ffffff !important; /* White background */
+    background-color: #ffffff !important;
+    /* White background */
     border-bottom: 1px solid #e5e5e5;
   }
 
   .navbar-brand {
-    color: #fe424d !important; /* Airbnb red */
+    color: #fe424d !important;
+    /* Airbnb red */
     font-weight: bold;
     font-size: 1.3rem;
   }
@@ -15,21 +17,29 @@
   }
 
   .nav-link {
-    color: #333 !important; /* Dark gray text */
+    color: #333 !important;
+    /* Dark gray text */
     font-weight: 500;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
   }
 
   .nav-link:hover {
-    color: #fe424d !important; /* Red hover */
+    color: #fe424d !important;
+    /* Red hover */
   }
 
   .btn-search {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    /* space between icon and text */
     background-color: #fe424d;
     color: #fff;
     border-radius: 25px;
-    padding: 0 1rem;
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
     border: none;
   }
 
@@ -38,16 +48,18 @@
     color: #fff;
   }
 
+  .btn-search i {
+    margin: 0;
+    /* remove extra margin */
+    font-size: 1rem;
+  }
+
+
   .search {
     border-radius: 25px;
     padding: 0.5rem 3rem;
     font-size: 1rem;
     border: 1px solid #ccc;
-  }
-
-  .btn-search i {
-    display: inline;
-    margin-right: 0.5rem;
   }
 </style>
 
@@ -62,7 +74,7 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      
+
       <!-- Search -->
       <div class="navbar-nav ms-auto">
         <form class="d-flex" role="search" action="/listings/search" method="GET">
@@ -79,10 +91,10 @@
         <% if (!currentUser) { %>
           <a class="nav-link" href="/signup"><b>Sign up</b></a>
           <a class="nav-link" href="/login"><b>Sign in</b></a>
-        <% } %>
-        <% if (currentUser) { %>
-          <a class="nav-link" href="/logout"><b>Sign out</b></a>
-        <% } %>
+          <% } %>
+            <% if (currentUser) { %>
+              <a class="nav-link" href="/logout"><b>Sign out</b></a>
+              <% } %>
       </div>
     </div>
   </div>
