@@ -73,3 +73,31 @@ module.exports.destroyListing = async (req, res) => {
     res.redirect("/listings");
 };
 
+
+module.exports.searchListings = async (req, res) => {
+    const { q } = req.query;
+
+    // Trim and normalize input (removes extra spaces and smart quotes)
+    const query = q ? q.trim().replace(/[“”‘’]/g, '"') : "";
+
+    if (!query) {
+        req.flash("error", "Please enter something to search!");
+        return res.redirect("/listings");
+    }
+
+    const listings = await Listing.find({
+        $or: [
+            { title: { $regex: query, $options: "i" } },
+            { location: { $regex: query, $options: "i" } },
+            { country: { $regex: query, $options: "i" } },
+            { category: { $regex: query, $options: "i" } }
+        ]
+    });
+
+    if (listings.length === 0) {
+        req.flash("error", `No results found for "${query}"`);
+        return res.redirect("/listings");
+    }
+
+    res.render("listings/index.ejs", { allListings: listings });
+};
