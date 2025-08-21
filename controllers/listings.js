@@ -73,6 +73,16 @@ module.exports.destroyListing = async (req, res) => {
     res.redirect("/listings");
 };
 
+// Fetch and display listings filtered by the selected category
+module.exports.listingsByCategory = async (req, res) => {
+    const { categoryName } = req.params;
+    const filteredListings = await Listing.find({ category: categoryName });
+    if (!filteredListings || filteredListings.length === 0) {
+        req.flash('error', `No listings found for category: ${categoryName}`);
+        return res.redirect('/listings');
+    }
+    res.render("listings/index.ejs", { allListings: filteredListings });
+};
 
 module.exports.searchListings = async (req, res) => {
     const { q } = req.query;
