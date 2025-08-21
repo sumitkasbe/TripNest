@@ -45,8 +45,8 @@ module.exports.renderEditForm = async (req, res) => {
         return res.redirect("/listings");
     }
 
-   let originalImgUrl = listing.image.url.replace("/upload/", "/upload/w_300,h_300,c_fill,g_auto/");
-   console.log("Resized Image URL:", originalImgUrl);
+    let originalImgUrl = listing.image.url.replace("/upload/", "/upload/w_300,h_300,c_fill,g_auto/");
+    console.log("Resized Image URL:", originalImgUrl);
     res.render("./listings/edit.ejs", { listing, originalImgUrl });
 };
 
@@ -77,7 +77,6 @@ module.exports.destroyListing = async (req, res) => {
 module.exports.searchListings = async (req, res) => {
     const { q } = req.query;
 
-    // Trim and normalize input (removes extra spaces and smart quotes)
     const query = q ? q.trim().replace(/[“”‘’]/g, '"') : "";
 
     if (!query) {
@@ -85,15 +84,21 @@ module.exports.searchListings = async (req, res) => {
         return res.redirect("/listings");
     }
 
-    const listings = await Listing.find({
-        $or: [
-            { title: { $regex: query, $options: "i" } },
-            { location: { $regex: query, $options: "i" } },
-            { country: { $regex: query, $options: "i" } },
-            { category: { $regex: query, $options: "i" } },
-            { price: { $regex: query, $options: "i" } }
-        ]
-    });
+    // Build OR conditions
+    let orConditions = [
+        { title: { $regex: query, $options: "i" } },
+        { location: { $regex: query, $options: "i" } },
+        { country: { $regex: query, $options: "i" } },
+        { category: { $regex: query, $options: "i" } },
+    ];
+
+    // If query is a number, add exact price match
+    if (!isNaN(query)) {
+        orConditions.push({ price: Number(query) });
+    }
+
+    // Run the search once
+    const listings = await Listing.find({ $or: orConditions });
 
     if (listings.length === 0) {
         req.flash("error", `No results found for "${query}"`);
