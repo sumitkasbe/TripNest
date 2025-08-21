@@ -90,7 +90,8 @@ module.exports.searchListings = async (req, res) => {
             { title: { $regex: query, $options: "i" } },
             { location: { $regex: query, $options: "i" } },
             { country: { $regex: query, $options: "i" } },
-            { category: { $regex: query, $options: "i" } }
+            { category: { $regex: query, $options: "i" } },
+            { price: { $regex: query, $options: "i" } }
         ]
     });
 
