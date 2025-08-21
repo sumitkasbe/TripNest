@@ -1,46 +1,56 @@
 <style>
-  .btn-search {
-    background-color: #14b8a6; /* TripNest Teal */
-    color: #fff;
-    border-radius: 20px;
-    padding: 0.4rem 1rem;
+  .navbar {
+    background-color: #ffffff !important; /* White background */
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .navbar-brand {
+    color: #fe424d !important; /* Airbnb red */
+    font-weight: bold;
+    font-size: 1.3rem;
+  }
+
+  .navbar-brand:hover {
+    color: #d93c45 !important;
+  }
+
+  .nav-link {
+    color: #333 !important; /* Dark gray text */
     font-weight: 500;
-    transition: 0.2s ease-in-out;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .nav-link:hover {
+    color: #fe424d !important; /* Red hover */
+  }
+
+  .btn-search {
+    background-color: #fe424d;
+    color: #fff;
+    border-radius: 25px;
+    padding: 0 1rem;
+    border: none;
   }
 
   .btn-search:hover {
-    background-color: #0d9488; /* Darker Teal */
+    background-color: #d93c45;
     color: #fff;
   }
 
   .search {
-    border-radius: 20px;
-    padding: 0.4rem 1rem;
-    font-size: 0.95rem;
+    border-radius: 25px;
+    padding: 0.5rem 3rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
   }
 
-  .navbar-brand {
-    font-weight: bold;
-    color: #14b8a6 !important;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-  }
-
-  .navbar-brand i {
-    margin-right: 5px;
-    color: #14b8a6;
-  }
-
-  .nav-link {
-    font-weight: 500;
-    margin-left: 0.5rem;
-  }
-
-  .nav-link:hover {
-    color: #14b8a6 !important;
+  .btn-search i {
+    display: inline;
+    margin-right: 0.5rem;
   }
 </style>
+
 
 <nav class="navbar navbar-expand-md bg-light border-bottom sticky-top">
   <div class="container-fluid">
