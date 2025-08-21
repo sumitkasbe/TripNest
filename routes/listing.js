@@ -6,10 +6,15 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const { isOwner, isLoggedIn, validateListing } = require("../middleware.js");
 
 const listingController = require("../controllers/listings.js");
+const listingController = require("../controllers/listings.js");
 const multer = require('multer')
 const { storage } = require("../cloudConfig.js");
 const upload = multer({ storage });
 
+//Search Route to get Listings
+router.get("/search", wrapAsync(listingController.searchListings));
+
+//Index route & Create route
 router
     .route("/")
     .get(wrapAsync(listingController.index)) //index route
@@ -18,6 +23,7 @@ router
 //New Route
 router.get("/new", isLoggedIn, listingController.renderNewForm);
 
+//show, update & delete route
 router
     .route("/:id")
     .get(wrapAsync(listingController.showListing)) //show route
