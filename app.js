@@ -108,17 +108,17 @@ app.use("/", userRouter);
 // });
 
 app.use((err, req, res, next) => {
+    // Use ExpressError's status & message, or default values
     const statusCode = err.status || 500;
     const message = err.message || "Something went wrong!";
 
-    // Set flash message
+    // Set flash message for UX
     req.flash("error", message);
 
-    // Redirect back to previous page or listings
+    // Redirect back to previous page (or fallback to /listings)
     const redirectUrl = req.get('referer') || '/listings';
     res.redirect(redirectUrl);
 });
-
 
 app.listen(port, () => {
     console.log(`app is listening on a port ${port}`);
