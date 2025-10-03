@@ -101,11 +101,24 @@ app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
 
-app.use((err,req,res,next)=>{
-    let {statusCode = 500 , message = "Something is wrong"} = err;
-    res.render("error.ejs", {message,statusCode});
-    // res.status(statusCode).send(message);
+// app.use((err,req,res,next)=>{
+//     let {statusCode = 500 , message = "Something is wrong"} = err;
+//     res.render("error.ejs", {message,statusCode});
+//     // res.status(statusCode).send(message);
+// });
+
+app.use((err, req, res, next) => {
+    const statusCode = err.status || 500;
+    const message = err.message || "Something went wrong!";
+
+    // Set flash message
+    req.flash("error", message);
+
+    // Redirect back to previous page or listings
+    const redirectUrl = req.get('referer') || '/listings';
+    res.redirect(redirectUrl);
 });
+
 
 app.listen(port, () => {
     console.log(`app is listening on a port ${port}`);
