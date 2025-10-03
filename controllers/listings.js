@@ -26,15 +26,20 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res, next) => {
-    let url = req.file.path;
-    let filename = req.file.filename;
+    // ✅ Attach uploaded image to req.body.listing before validation
+    if (req.file) {
+        req.body.listing.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+
     const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
-    newListing.image = { url, filename };
     await newListing.save();
 
     req.flash("success", "New Listing Created!");
-    res.redirect("/listings");
+    res.redirect(`/listings/${newListing._id}`);
 };
 
 module.exports.renderEditForm = async (req, res) => {
@@ -52,12 +57,15 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateListing = async (req, res) => {
     let { id } = req.params;
+
+    // ✅ Spread req.body.listing but don’t overwrite image unless new file uploaded
     let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
 
-    if (typeof req.file !== "undefined") {
-        let url = req.file.path;
-        let filename = req.file.filename;
-        listing.image = { url, filename };
+    if (req.file) {
+        listing.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
         await listing.save();
     }
 
