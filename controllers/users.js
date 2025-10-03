@@ -1,5 +1,4 @@
 const User = require("../models/user");
-const ExpressError = require("../utils/ExpressError");
 
 // SIGNUP FORM
 module.exports.renderSignUpForm = (req, res) => {
