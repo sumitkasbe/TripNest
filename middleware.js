@@ -18,15 +18,32 @@ module.exports.validateListing = (req, res, next) => {
 };
 
 //joi review validation
-module.exports.validateReview = (req, res, next) => {
-    const { error } = reviewScehma.validate(req.body);
+// module.exports.validateReview = (req, res, next) => {
+//     const { error } = reviewScehma.validate(req.body);
+//     if (error) {
+//         let errMsg = error.details.map((el) => el.message).join(",");
+//         throw new ExpressError(400, errMsg);
+//     } else {
+//         next();
+//     }
+// };
+
+module.exports.validateListing = (req, res, next) => {
+    if (req.file) {
+        req.body.listing.image = {
+            url: req.file.path,       // Cloudinary URL or local path
+            filename: req.file.filename || ''
+        };
+    }
+
+    const { error } = listingSchema.validate(req.body);
     if (error) {
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400, errMsg);
+        const msg = error.details.map(el => el.message).join(', ');
+        return res.status(400).send(msg);
     } else {
         next();
     }
-};       
+};
 
 module.exports.isLoggedIn = (req, res, next) => {
   console.log(req.user);
