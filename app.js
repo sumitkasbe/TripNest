@@ -103,7 +103,7 @@ app.use("/", userRouter);
 
 app.use((err,req,res,next)=>{
     let {statusCode = 500 , message = "Something is wrong"} = err;
-    res.render("listings/error.ejs", {message,statusCode});
+    res.render("error.ejs", {message,statusCode});
     // res.status(statusCode).send(message);
 });
 
