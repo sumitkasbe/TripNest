@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const review = require('./models/review');
 
 module.exports.listingSchema = Joi.object({
     listing : Joi.object({
@@ -10,7 +11,7 @@ module.exports.listingSchema = Joi.object({
         image: Joi.object({
             url: Joi.string().uri().required(),
             filename: Joi.string().allow('').optional()
-        }).optional(),   // 👈 now optional
+        }).required(),
         category: Joi.string().valid(
             "Trending",
             "Rooms",
@@ -22,14 +23,14 @@ module.exports.listingSchema = Joi.object({
             "Farms",
             "Arctic",
             "Domes",
-            "Boats"
+            "Boats",
         ).required(),
     }).required()
 });
 
 module.exports.reviewSchema = Joi.object({
-    review: Joi.object({
-        rating: Joi.number().min(1).max(5).required(),
-        comment: Joi.string().min(1).required()
+    review:Joi.object({
+        rating:Joi.number().required().min(1).max(5),
+        comment:Joi.string().required(),
     }).required()
 });
