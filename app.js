@@ -14,7 +14,7 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/user.js"); 
 
 const mongoose = require("mongoose");
-// const ExpressError = require("./utils/ExpressError.js");
+const ExpressError = require("./utils/ExpressError.js");
 
 const listingsRouter = require("./routes/listing.js");
 const reviewsRouter = require("./routes/review.js");
@@ -103,7 +103,7 @@ app.use("/", userRouter);
 
 app.use((err,req,res,next)=>{
     let {statusCode = 500 , message = "Something is wrong"} = err;
-    res.render("error.ejs", {message,statusCode});
+    res.render("listings/error.ejs", {message,statusCode});
     // res.status(statusCode).send(message);
 });
 
