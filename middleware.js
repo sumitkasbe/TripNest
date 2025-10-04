@@ -18,8 +18,6 @@ const ExpressError = require("./utils/ExpressError.js");
 // };
 
 // middleware.js
-const { listingSchema } = require('./schema');
-
 module.exports.validateListing = (req, res, next) => {
     if (req.file) {
         req.body.listing.image = {
