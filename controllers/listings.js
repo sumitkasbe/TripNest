@@ -1,91 +1,115 @@
-const Listing = require("../models/listing");
+const Listing = require("../models/listing.js");
 
+// INDEX - show all listings
 module.exports.index = async (req, res) => {
     const allListings = await Listing.find({});
-    res.render("./listings/index.ejs", { allListings });
+    res.render("listings/index.ejs", { allListings });
 };
 
+// RENDER NEW LISTING FORM
 module.exports.renderNewForm = (req, res) => {
-    res.render("./listings/new.ejs");
+    res.render("listings/new.ejs");
 };
 
+// SHOW LISTING DETAILS
 module.exports.showListing = async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id).populate({
-        path: "reviews",
-        populate: {
-            path: "author"
-        },
-    }).populate("owner");
+    const { id } = req.params;
+    const listing = await Listing.findById(id)
+        .populate({
+            path: "reviews",
+            populate: { path: "author" }
+        })
+        .populate("owner");
 
     if (!listing) {
-        req.flash("error", "Listing Not Found!");
+        req.flash('error', 'The listing you requested does not exist!');
         return res.redirect("/listings");
     }
-    res.render("./listings/show.ejs", { listing });
+
+    res.render("listings/show.ejs", { listing });
 };
 
-module.exports.createListing = async (req, res, next) => {
-    let url = req.file.path;
-    let filename = req.file.filename;
-    const newListing = new Listing(req.body.listing);
+// CREATE LISTING
+module.exports.createListing = async (req, res) => {
+    const { listing } = req.body;
+    const newListing = new Listing(listing);
     newListing.owner = req.user._id;
-    newListing.image = { url, filename };
-    await newListing.save();
 
-    req.flash("success", "New Listing Created!");
+    if (req.file) {
+        newListing.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+
+    await newListing.save();
+    req.flash('success', 'Listing created successfully!');
     res.redirect("/listings");
 };
 
+// RENDER EDIT FORM
 module.exports.renderEditForm = async (req, res) => {
-    let { id } = req.params;
+    const { id } = req.params;
     const listing = await Listing.findById(id);
+
     if (!listing) {
-        req.flash("error", "Listing Not Found!");
+        req.flash('error', 'The listing you requested does not exist!');
         return res.redirect("/listings");
     }
 
-    let originalImgUrl = listing.image.url.replace("/upload/", "/upload/w_300,h_300,c_fill,g_auto/");
-    console.log("Resized Image URL:", originalImgUrl);
-    res.render("./listings/edit.ejs", { listing, originalImgUrl });
+    // Optional smaller preview image
+    let originalImageUrl = listing.image?.url;
+    if (originalImageUrl) {
+        originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
+    }
+
+    res.render("listings/edit.ejs", { listing, originalImageUrl });
 };
 
+// UPDATE LISTING
 module.exports.updateListing = async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+    const { id } = req.params;
+    const { listing } = req.body;
 
-    if (typeof req.file !== "undefined") {
-        let url = req.file.path;
-        let filename = req.file.filename;
-        listing.image = { url, filename };
-        await listing.save();
+    const updatedListing = await Listing.findByIdAndUpdate(id, { ...listing }, { new: true });
+
+    // Only update image if a new file is uploaded
+    if (req.file) {
+        updatedListing.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+        await updatedListing.save();
     }
+
     req.flash('success', 'Listing updated successfully!');
     res.redirect(`/listings/${id}`);
 };
 
+// DELETE LISTING
 module.exports.destroyListing = async (req, res) => {
-    let { id } = req.params;
-    let deleteListing = await Listing.findByIdAndDelete(id);
-    console.log(deleteListing);
-    req.flash("success", "Listing Deleted!");
+    const { id } = req.params;
+    await Listing.findByIdAndDelete(id);
+    req.flash('success', 'Listing deleted successfully!');
     res.redirect("/listings");
 };
 
-// Fetch and display listings filtered by the selected category
+// LISTINGS BY CATEGORY
 module.exports.listingsByCategory = async (req, res) => {
     const { categoryName } = req.params;
-    const filteredListings = await Listing.find({ category: categoryName });
-    if (!filteredListings || filteredListings.length === 0) {
+    const listings = await Listing.find({ category: categoryName });
+
+    if (!listings || listings.length === 0) {
         req.flash('error', `No listings found for category: ${categoryName}`);
         return res.redirect('/listings');
     }
-    res.render("listings/index.ejs", { allListings: filteredListings });
+
+    res.render("listings/index.ejs", { allListings: listings });
 };
 
+// SEARCH LISTINGS
 module.exports.searchListings = async (req, res) => {
     const { q } = req.query;
-
     const query = q ? q.trim().replace(/[“”‘’]/g, '"') : "";
 
     if (!query) {
@@ -93,21 +117,14 @@ module.exports.searchListings = async (req, res) => {
         return res.redirect("/listings");
     }
 
-    // Build OR conditions
-    let orConditions = [
-        { title: { $regex: query, $options: "i" } },
-        { location: { $regex: query, $options: "i" } },
-        { country: { $regex: query, $options: "i" } },
-        { category: { $regex: query, $options: "i" } },
-    ];
-
-    // If query is a number, add exact price match
-    if (!isNaN(query)) {
-        orConditions.push({ price: Number(query) });
-    }
-
-    // Run the search once
-    const listings = await Listing.find({ $or: orConditions });
+    const listings = await Listing.find({
+        $or: [
+            { title: { $regex: query, $options: "i" } },
+            { location: { $regex: query, $options: "i" } },
+            { country: { $regex: query, $options: "i" } },
+            { category: { $regex: query, $options: "i" } }
+        ]
+    });
 
     if (listings.length === 0) {
         req.flash("error", `No results found for "${query}"`);
