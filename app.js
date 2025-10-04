@@ -101,23 +101,10 @@ app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
 
-// app.use((err,req,res,next)=>{
-//     let {statusCode = 500 , message = "Something is wrong"} = err;
-//     res.render("error.ejs", {message,statusCode});
-//     // res.status(statusCode).send(message);
-// });
-
-app.use((err, req, res, next) => {
-    // Use ExpressError's status & message, or default values
-    const statusCode = err.status || 500;
-    const message = err.message || "Something went wrong!";
-
-    // Set flash message for UX
-    req.flash("error", message);
-
-    // Redirect back to previous page (or fallback to /listings)
-    const redirectUrl = req.get('referer') || '/listings';
-    res.redirect(redirectUrl);
+app.use((err,req,res,next)=>{
+    let {statusCode = 500 , message = "Something is wrong"} = err;
+    res.render("listings/error.ejs", {message,statusCode});
+    // res.status(statusCode).send(message);
 });
 
 app.listen(port, () => {
