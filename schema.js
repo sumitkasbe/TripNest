@@ -10,7 +10,7 @@ module.exports.listingSchema = Joi.object({
         image: Joi.object({
             url: Joi.string().uri().required(),
             filename: Joi.string().allow('').optional()
-        }).required(),
+        }).optional(),   // 👈 now optional
         category: Joi.string().valid(
             "Trending",
             "Rooms",
@@ -22,7 +22,7 @@ module.exports.listingSchema = Joi.object({
             "Farms",
             "Arctic",
             "Domes",
-            "Boats",
+            "Boats"
         ).required(),
     }).required()
 });
