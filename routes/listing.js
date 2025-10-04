@@ -27,7 +27,26 @@ router.get("/new", isLoggedIn, listingController.renderNewForm);
 router
     .route("/:id")
     .get(wrapAsync(listingController.showListing)) //show route
-    .put(isLoggedIn, isOwner, upload.single('listing[image]'), validateListing, wrapAsync(listingController.updateListing)) //update route
+    
+    // .put(isLoggedIn, isOwner, upload.single('listing[image]'), validateListing, wrapAsync(listingController.updateListing)) //update route
+    .put(
+        isLoggedIn,
+        isOwner,
+        upload.single('listing[image]'),
+        (req, res, next) => {
+            // Attach file to req.body.listing BEFORE validation
+            if (req.file) {
+                req.body.listing.image = {
+                    url: req.file.path,
+                    filename: req.file.filename
+                };
+            }
+            next();
+        },
+        validateListing,
+        wrapAsync(listingController.updateListing)
+    )
+
     .delete(isLoggedIn, isOwner, wrapAsync(listingController.destroyListing)); //delete route
 
 //Edit Route
