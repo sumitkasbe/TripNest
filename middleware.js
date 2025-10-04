@@ -2,7 +2,7 @@ const { model } = require("mongoose");
 const Listing = require("./models/listing.js");
 const Review = require("./models/review.js");
 const { listingSchema } = require("./schema.js");
-const { reviewScehma } = require("./schema.js");
+const { reviewSchema } = require("./schema.js");
 const ExpressError = require("./utils/ExpressError.js");
 
 // // joi listing validation
@@ -37,7 +37,7 @@ module.exports.validateListing = (req, res, next) => {
 
 //joi review validation
 module.exports.validateReview = (req, res, next) => {
-    const { error } = reviewScehma.validate(req.body);
+    const { error } = reviewSchema.validate(req.body);
     if (error) {
         let errMsg = error.details.map((el) => el.message).join(",");
         throw new ExpressError(400, errMsg);
